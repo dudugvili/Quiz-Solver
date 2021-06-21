@@ -6,6 +6,8 @@
 #    Jun 18, 2021 04:53:27 PM +0300  platform: Windows NT
 
 import sys
+import os
+global maximum
 
 try:
     import Tkinter as tk
@@ -48,25 +50,127 @@ def destroy_Top():
 
 class Top:
     def ex1(self):
-        if self.ex1_input == "":
-            self.ex1_ans.configure(text="please insert a string")
+        if self.ex1_input.get() == "":
+            self.ex1_ans.configure(text="Please insert a string")
             return
         string = self.ex1_input.get()
         max_word = ""
         max_len = 0
-        #cwd = os.getcwd()
-        #cwd += "dict.txt"
-        #print(cwd)
-        with open("c:\\Users\\Gvili\\Desktop\\quiz3\\dict.txt", "r") as dict_file:
+        cwd = os.getcwd()
+        cwd += "\dict.txt"
+        with open(cwd, "r") as dict_file:
             for word in dict_file:
                 clean_word = word.strip('\n')
                 if clean_word in string:
                     if max_len < len(clean_word):
                         max_word = clean_word
                         max_len = len(clean_word)
-        #print("The longest word in the string is", max_word, "and her length is", max_len)
-        string = "Answer: The longest word in the string is" + max_word + "and her length is" + str(max_len)
+        string = "Answer: The longest word in the string is " + max_word + " and the length is " + str(max_len)
         self.ex1_ans.configure(text= string)
+
+    def ex2(self):
+        if self.ex2_input.get() == "":
+            self.ex2_ans.configure(text="Please insert a string")
+            return
+        ctr = 0
+        string = self.ex2_input.get()
+        max_palin = ""
+        max_palin_len = 0
+        palin_list = []
+        for i in range(len(string)):
+            for j in range(i+1, len(string)+1):
+                palin = string[i:j]
+                if palin == palin[::-1] and not palin in palin_list and not len(palin) == 1:
+                    ctr += 1
+                    palin_list.append(palin)
+                    if max_palin_len<len(palin):
+                        max_palin = palin
+                        max_palin_len = len(palin)
+        string = "longest palindrom is '"+ max_palin + "' sum is " + str(ctr+max_palin_len)
+        self.ex2_ans.configure(text=string)
+
+    def LCS(self, X,Y,Z):
+        a = len(X) 
+        b = len(Y) 
+        c = len(Z) 
+        L = [[[0 for i in range(c+1)] for j in range(b+1)]
+            for k in range(a+1)]
+
+        for i in range(a+1):
+            for j in range(b+1):
+                for k in range(c+1):
+                    if (i == 0 or j == 0 or k == 0):
+                        L[i][j][k] = 0
+                        
+                    elif (X[i-1] == Y[j-1] and
+                        X[i-1] == Z[k-1]):
+                        L[i][j][k] = L[i-1][j-1][k-1] + 1
+    
+                    else:
+                        L[i][j][k] = max(max(L[i-1][j][k],
+                        L[i][j-1][k]),
+                                        L[i][j][k-1])
+
+        return L[a][b][c]
+
+    def ex3(self):
+        if self.ex3_a1_input.get() == "" or self.ex3_a2_input.get() == "" or self.ex3_a3_input.get() == "":
+            self.ex3_ans.configure(text="Please insert 3 series")
+            return
+        A1 = self.ex3_a1_input.get()
+        A1 = A1.split(', ')
+        A2 = self.ex3_a2_input.get()
+        A2 = A2.split(', ')
+        A3 = self.ex3_a3_input.get()
+        A3 = A3.split(', ')
+        X = ''
+        Y = ''
+        Z = ''
+        strings = []
+        strings.append(X)
+        strings.append(Y)
+        strings.append(Z)
+        series = []
+        series.append(A1)
+        series.append(A2)
+        series.append(A3)
+        for A in series:
+            for num in A:
+                strings[series.index(A)] += num
+        string = "length of LCS is " + str(self.LCS(strings[0], strings[1], strings[2]))
+        self.ex3_ans.configure(text=string)
+
+    
+    def ex4(self):
+        if self.ex4_input.get() == "":
+            self.ex4_ans.configure(text="Please insert a series")
+            return
+        arr = self.ex4_input.get().split(', ')
+        n = len(arr)
+        lis = [1]*n
+        for i in range(1, n):
+            for j in range(0, i):
+                if arr[i] >= arr[j] and lis[i] < lis[j] + 1:
+                    lis[i] = lis[j]+1
+        maximum_asc = 0
+        for i in range(n):
+            maximum_asc = max(maximum_asc, lis[i])
+        arr = self.ex4_input.get()
+        arr = arr.split(', ')
+        n = len(arr)
+        lis = [1]*n
+        for i in range(1, n):
+            for j in range(0, i):
+                if arr[i] <= arr[j] and lis[i] < lis[j] + 1:
+                    lis[i] = lis[j]+1
+        maximum_des = 0
+        for i in range(n):
+            maximum_des = max(maximum_des, lis[i])
+        print(maximum_asc," ", maximum_des)
+        string = "length of LIS/LDS is " + str(max(maximum_des, maximum_asc))
+        self.ex4_ans.configure(text=string)
+    
+
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -88,7 +192,7 @@ class Top:
         top.minsize(120, 1)
         top.maxsize(2198, 1215)
         top.resizable(1,  1)
-        top.title("im here")
+        top.title("Quiz Solver")
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="black")
@@ -97,7 +201,7 @@ class Top:
         self.ex1_btn.place(relx=0.783, rely=0.155, height=25, width=76)
         self.ex1_btn.configure(takefocus="")
         self.ex1_btn.configure(text='''Calculate''')
-        self.ex1_btn.configure(command = self.ex1)
+        self.ex1_btn.configure(command=self.ex1)
 
         self.msg = tk.Message(top)
         self.msg.place(relx=0.017, rely=-0.021, relheight=0.208, relwidth=0.433)
@@ -106,7 +210,7 @@ class Top:
         self.msg.configure(highlightbackground="#d9d9d9")
         self.msg.configure(highlightcolor="black")
         self.msg.configure(text='''Welcome, this software will help you solve
-quiz 3 quickly without coding, just paste the
+quiz 3 quickly , just paste the
 data and press "Calculate"''')
         self.msg.configure(width=260)
 
@@ -127,13 +231,13 @@ data and press "Calculate"''')
         self.Message1.configure(width=100)
 
         self.ex1_ans = tk.Message(top)
-        self.ex1_ans.place(relx=0.1, rely=0.222, relheight=0.05, relwidth=0.1)
+        self.ex1_ans.place(relx=0.05, rely=0.222, relheight=0.053, relwidth=0.9)
         self.ex1_ans.configure(background="#d9d9d9")
         self.ex1_ans.configure(foreground="#000000")
         self.ex1_ans.configure(highlightbackground="#d9d9d9")
         self.ex1_ans.configure(highlightcolor="black")
         self.ex1_ans.configure(text='''Answer :''')
-        self.ex1_ans.configure(width=60)
+        self.ex1_ans.configure(width=500)
 
         self.Message2 = tk.Message(top)
         self.Message2.place(relx=0.028, rely=0.303, relheight=0.053
@@ -156,15 +260,16 @@ data and press "Calculate"''')
         self.ex2_btn.place(relx=0.783, rely=0.31, height=25, width=76)
         self.ex2_btn.configure(takefocus="")
         self.ex2_btn.configure(text='''Calculate''')
+        self.ex2_btn.configure(command=self.ex2)
 
         self.ex2_ans = tk.Message(top)
-        self.ex2_ans.place(relx=0.1, rely=0.377, relheight=0.053, relwidth=0.1)
+        self.ex2_ans.place(relx=0.05, rely=0.377, relheight=0.053, relwidth=0.9)
         self.ex2_ans.configure(background="#d9d9d9")
         self.ex2_ans.configure(foreground="#000000")
         self.ex2_ans.configure(highlightbackground="#d9d9d9")
         self.ex2_ans.configure(highlightcolor="black")
         self.ex2_ans.configure(text='''Answer :''')
-        self.ex2_ans.configure(width=60)
+        self.ex2_ans.configure(width=500)
 
         self.Message3 = tk.Message(top)
         self.Message3.place(relx=0.017, rely=0.444, relheight=0.05
@@ -256,13 +361,13 @@ data and press "Calculate"''')
         self.Message2_1.configure(width=90)
 
         self.ex3_ans = tk.Message(top)
-        self.ex3_ans.place(relx=0.1, rely=0.644, relheight=0.05, relwidth=0.1)
+        self.ex3_ans.place(relx=0.05, rely=0.644, relheight=0.05, relwidth=0.9)
         self.ex3_ans.configure(background="#d9d9d9")
         self.ex3_ans.configure(foreground="#000000")
         self.ex3_ans.configure(highlightbackground="#d9d9d9")
         self.ex3_ans.configure(highlightcolor="black")
         self.ex3_ans.configure(text='''Answer :''')
-        self.ex3_ans.configure(width=60)
+        self.ex3_ans.configure(width=500)
 
         self.Message4_2 = tk.Message(top)
         self.Message4_2.place(relx=0.75, rely=0.704, relheight=0.05
@@ -275,21 +380,23 @@ data and press "Calculate"''')
         self.Message4_2.configure(text='''}''')
         self.Message4_2.configure(width=20)
 
-        self.ex3_a3_input_1 = ttk.Entry(top)
-        self.ex3_a3_input_1.place(relx=0.183, rely=0.711, relheight=0.048
+        self.ex4_input = ttk.Entry(top)
+        self.ex4_input.place(relx=0.183, rely=0.711, relheight=0.048
                 , relwidth=0.56)
-        self.ex3_a3_input_1.configure(takefocus="")
-        self.ex3_a3_input_1.configure(cursor="fleur")
+        self.ex4_input.configure(takefocus="")
+        self.ex4_input.configure(cursor="fleur")
 
         self.ex3_btn = ttk.Button(top)
         self.ex3_btn.place(relx=0.783, rely=0.511, height=25, width=76)
         self.ex3_btn.configure(takefocus="")
         self.ex3_btn.configure(text='''Calculate''')
+        self.ex3_btn.configure(command=self.ex3)
 
         self.ex4_btn = ttk.Button(top)
         self.ex4_btn.place(relx=0.783, rely=0.702, height=25, width=76)
         self.ex4_btn.configure(takefocus="")
         self.ex4_btn.configure(text='''Calculate''')
+        self.ex4_btn.configure(command=self.ex4)
 
         self.Message5 = tk.Message(top)
         self.Message5.place(relx=0.383, rely=0.907, relheight=0.05
@@ -303,13 +410,13 @@ data and press "Calculate"''')
         self.Message5.configure(width=90)
 
         self.ex4_ans = tk.Message(top)
-        self.ex4_ans.place(relx=0.1, rely=0.778, relheight=0.05, relwidth=0.1)
+        self.ex4_ans.place(relx=0.05, rely=0.778, relheight=0.05, relwidth=0.9)
         self.ex4_ans.configure(background="#d9d9d9")
         self.ex4_ans.configure(foreground="#000000")
         self.ex4_ans.configure(highlightbackground="#d9d9d9")
         self.ex4_ans.configure(highlightcolor="black")
         self.ex4_ans.configure(text='''Answer :''')
-        self.ex4_ans.configure(width=60)
+        self.ex4_ans.configure(width=500)
 
 if __name__ == '__main__':
     vp_start_gui()
