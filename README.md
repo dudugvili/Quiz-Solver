@@ -4,6 +4,7 @@ A software I've built in python with ui to solve a home quiz i got in my class w
 The quiz was delivered through the web with random data and the goal was to solve it with dynamic programming,
 i did so and added an extra ui to solve the quiz with any data/numbers given.
 
+### download all files without pictures and run test3.py - this is the main file.
 ## The software itself - 
 ![GitHub Logo](/pictures/Capture.PNG)
 
